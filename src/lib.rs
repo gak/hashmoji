@@ -1,8 +1,8 @@
+mod generated;
+
+use crate::generated::EMOJIS;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
-use crate::generated::EMOJIS;
-
-mod generated;
 
 struct Hashmoji;
 
@@ -23,8 +23,9 @@ mod tests {
     #[test]
     fn brainstorm() {
         println!("{}", Hashmoji::hash("gak"));
-        println!("{}", Hashmoji::hash(0));
-        println!("{}", Hashmoji::hash(1));
-        println!("{}", Hashmoji::hash(2));
+        println!("{}", Hashmoji::hash(123));
+        println!("{}", Hashmoji::hash(vec!["a", "b", "c"]));
+        println!("{}", Hashmoji::hash(true));
+        println!("{}", Hashmoji::hash(false));
     }
 }

@@ -26,6 +26,19 @@ fn main() {
             continue;
         }
 
+        // We want unique looking emojis, however kiss, holding hands and couple have many
+        // permutations. We don't want to include all of them, so we skip all of them except the
+        // "base" ones.
+        if line.contains("holding hands:") {
+            continue;
+        }
+        if line.contains("couple with heart:") {
+            continue;
+        }
+        if line.contains("kiss:") {
+            continue;
+        }
+
         // Grab the emoji after "# "
         let emoji = line.split("# ").nth(1).unwrap();
         let emoji = emoji.split(" ").next().unwrap();
