@@ -1,4 +1,4 @@
-//! hashmoji is a crate that generates deterministic unique emojis based on the hash of a value.
+//! hashmoji generates deterministic emoji based on the hash of a value.
 //!
 //! This is useful for generating unique emojis for a given value, such as a user ID, a file
 //! hash, UUID, etc. It is easier for the eye to recognise an emoji than remembering some random

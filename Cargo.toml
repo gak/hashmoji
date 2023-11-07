@@ -3,9 +3,11 @@ name = "hashmoji"
 version = "0.1.0"
 edition = "2021"
 authors = ["gak <gak@gak0.com>"]
-description = "Provides a hash functions that returns emojis."
+description = "Generates deterministic emoji based on the hash of a value."
 repository = "https://github.com/gak/hashmoji"
 license = "MIT OR Apache-2.0"
+categories = ["development-tools::debugging", "no-std", ]
+keywords = ["hash", "emoji"]
 
 [dependencies]
 twox-hash = { version = "1.6.3", default-features = false }
