@@ -115,7 +115,7 @@ fn hasher() -> impl Hasher {
     XxHash::with_seed(0)
 }
 
-///! Generate one emoji based on the hash of the given value.
+/// Generate one emoji based on the hash of the given value.
 pub fn one(hashable: impl Hash) -> &'static str {
     let mut hasher = hasher();
     hashable.hash(&mut hasher);
@@ -124,7 +124,7 @@ pub fn one(hashable: impl Hash) -> &'static str {
     EMOJIS[(hash % EMOJIS.len() as u64) as usize]
 }
 
-///! Choose a string size between the given range and generate a unique string of emojis.
+/// Choose a string size between the given range and generate a unique string of emojis.
 #[cfg(feature = "alloc")]
 pub fn variable(hashable: impl Hash, range: core::ops::Range<usize>) -> alloc::string::String {
     let mut hasher = crate::hasher();
@@ -136,13 +136,13 @@ pub fn variable(hashable: impl Hash, range: core::ops::Range<usize>) -> alloc::s
     fixed(hashable, count)
 }
 
-///! Generate a unique fixed length string of emojis based on the hash of the given value.
+/// Generate a unique fixed length string of emojis based on the hash of the given value.
 #[cfg(feature = "alloc")]
 pub fn fixed(hashable: impl Hash, count: usize) -> String {
     let mut hasher = crate::hasher();
     let mut output = String::with_capacity(count);
     for _ in 0..count {
-        //! Hash it again for each emoji to make it more unique.
+        // Hash it again for each emoji to make it more unique.
         hashable.hash(&mut hasher);
         let hash = hasher.finish();
 
@@ -153,7 +153,7 @@ pub fn fixed(hashable: impl Hash, count: usize) -> String {
     output
 }
 
-///! Iterate over all compiled emojis.
+/// Iterate over all compiled emojis.
 pub fn iter() -> impl Iterator<Item = &'static str> {
     EMOJIS.into_iter()
 }
