@@ -29,7 +29,7 @@ fn write_emojis<'a>(path: &PathBuf, emojis: impl Iterator<Item = &'a str>) {
             .unwrap();
     }
 
-    generated.write_all(b"\n];\n").unwrap();
+    generated.write_all(b"];\n").unwrap();
 
     eprintln!("Wrote {count} emojis to {path:?}");
 }

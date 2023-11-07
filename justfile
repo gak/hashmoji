@@ -16,7 +16,7 @@ test:
 
     RUSTFLAGS="-D warnings" cargo run --example iter --no-default-features --features std,genders | grep 🧔 | grep -v 🧔‍♀️
     RUSTFLAGS="-D warnings" cargo run --example iter --no-default-features --features std,additive,person | grep 🧔 | grep -v 🧔‍♀️
-    RUSTFLAGS="-D warnings" cargo run --example iter --no-default-features --features std,additive,person,genders | grep 👧
+    RUSTFLAGS="-D warnings" cargo run --example iter --no-default-features --features std,additive,person,genders | grep 👧 | grep 🧔‍♀️
 
     cargo clippy -- -D warnings
     cargo clippy --no-default-features -- -D warnings
