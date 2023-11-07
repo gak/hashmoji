@@ -5,8 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 fn main() {
-    let mut path = PathBuf::from_str(env!("CARGO_MANIFEST_DIR")).unwrap();
-    path.push("src");
+    let mut path = PathBuf::from_str(&env::var("OUT_DIR").unwrap()).unwrap();
     path.push("generated.rs");
 
     let collection = hashmoji_generator::Collection::all();

@@ -39,14 +39,13 @@
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
-mod generated;
-
-use crate::generated::EMOJIS;
 use core::hash::{Hash, Hasher};
 use twox_hash::XxHash;
 
 #[cfg(feature = "alloc")]
 pub use alloc::string::String;
+
+include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 fn hasher() -> impl Hasher {
     XxHash::with_seed(0)
