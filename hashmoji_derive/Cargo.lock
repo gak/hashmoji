@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "hashmoji_generator"
+name = "hashmoji_derive"
 version = "0.1.0"
