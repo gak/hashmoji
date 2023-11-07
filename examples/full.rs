@@ -1,6 +1,6 @@
 // compiler_error when we don't have std and don't have alloc
 #[cfg(not(feature = "std"))]
-compile_error!("hashmoji requires std");
+compile_error!("This example requires std");
 
 use std::fmt::Display;
 

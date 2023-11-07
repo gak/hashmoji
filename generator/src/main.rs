@@ -8,6 +8,9 @@ fn main() {
     cargo_path.push("Cargo.toml");
 
     let collection = Collection::all();
-    let features = collection.features;
-    write_features(&cargo_path, &features);
+    write_features(
+        &cargo_path,
+        &collection.group_features,
+        &collection.subgroup_features,
+    );
 }

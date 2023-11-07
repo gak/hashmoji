@@ -5,22 +5,24 @@ use std::path::PathBuf;
 
 pub struct Emoji<'a> {
     pub emoji: &'a str,
-    pub group: &'a str,
-    pub subgroup: &'a str,
+    pub group: String,
+    pub subgroup: String,
     pub version: String,
 }
 
 pub struct Collection<'a> {
     pub emojis: Vec<Emoji<'a>>,
-    pub features: Vec<String>,
+    pub group_features: Vec<String>,
+    pub subgroup_features: Vec<String>,
 }
 
 impl Collection<'_> {
     pub fn all() -> Self {
         let mut emojis = Vec::with_capacity(4_000);
-        let mut features = Vec::with_capacity(50);
-        let mut group = "";
-        let mut subgroup = "";
+        let mut group_features = Vec::with_capacity(10);
+        let mut subgroup_features = Vec::with_capacity(50);
+        let mut group = "".to_string();
+        let mut subgroup = "".to_string();
 
         let emoji = include_str!("../../emoji-test.txt");
         for line in emoji.lines() {
@@ -30,16 +32,22 @@ impl Collection<'_> {
             }
 
             if line.starts_with("# group:") {
-                group = line.split(": ").nth(1).unwrap();
-                let group = to_feature_name(group);
-                features.push(group);
+                let found_group = line.split(": ").nth(1).unwrap();
+                group = to_feature_name(found_group);
+                if group == "component".to_string() {
+                    continue;
+                }
+                group_features.push(group.clone());
                 continue;
             }
 
             if line.starts_with("# subgroup:") {
-                subgroup = line.split(": ").nth(1).unwrap();
-                let subgroup = to_feature_name(subgroup);
-                features.push(subgroup);
+                let found_subgroup = line.split(": ").nth(1).unwrap();
+                if group == "component".to_string() {
+                    continue;
+                }
+                subgroup = to_feature_name(found_subgroup);
+                subgroup_features.push(subgroup.clone());
                 continue;
             }
 
@@ -51,6 +59,10 @@ impl Collection<'_> {
                 continue;
             }
 
+            if group == "component" {
+                continue;
+            }
+
             // Grab the emoji and version after "# "
             let emoji = line.split("# ").nth(1).unwrap();
             let mut parts = emoji.split(" ");
@@ -59,19 +71,23 @@ impl Collection<'_> {
             let version = version.replace("E", "");
 
             emojis.push(Emoji {
-                group,
-                subgroup,
+                group: group.clone(),
+                subgroup: subgroup.clone(),
                 version,
                 emoji,
             });
         }
 
-        Self { emojis, features }
+        Self {
+            emojis,
+            group_features,
+            subgroup_features,
+        }
     }
 }
 
 /// Open up Cargo.toml and find [features], then replace the rest.
-pub fn write_features(path: &PathBuf, features: &[String]) {
+pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_features: &[String]) {
     let mut cargo = File::open(&path).unwrap();
     let mut cargo_toml = String::new();
     cargo.read_to_string(&mut cargo_toml).unwrap();
@@ -87,10 +103,20 @@ pub fn write_features(path: &PathBuf, features: &[String]) {
     output.push(r#"alloc = []"#.to_string());
     output.push(r#"additive = []"#.to_string());
 
-    for feature in features {
+    output.push("# Group features".to_string());
+    for feature in group_features {
         output.push(format!("{feature} = []"));
     }
-    for feature in features {
+    output.push("# Subgroup features".to_string());
+    for feature in subgroup_features {
+        output.push(format!("{feature} = []"));
+    }
+    output.push("# Group skip features".to_string());
+    for feature in group_features {
+        output.push(format!("skip-{feature} = []"));
+    }
+    output.push("# Subgroup skip features".to_string());
+    for feature in subgroup_features {
         output.push(format!("skip-{feature} = []"));
     }
 
@@ -101,7 +127,7 @@ pub fn write_features(path: &PathBuf, features: &[String]) {
     cargo_toml.write_all(output.as_bytes()).unwrap();
     cargo_toml.write_all("\n".as_bytes()).unwrap();
 
-    let count = features.len() * 2;
+    let count = (group_features.len() + subgroup_features.len()) * 2;
     println!("Wrote {count} features to {path:?}");
 }
 
@@ -134,7 +160,7 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
         .emojis
         .iter()
         .filter(move |emoji| {
-            let include = has_env_feature(emoji.group) || has_env_feature(emoji.subgroup);
+            let include = has_env_feature(&emoji.group) || has_env_feature(&emoji.subgroup);
             let skip = has_env_feature(&format!("skip-{}", emoji.group))
                 || has_env_feature(&format!("skip-{}", emoji.subgroup));
 
