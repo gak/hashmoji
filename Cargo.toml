@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["gak <gak@gak0.com>"]
 description = "Provides a hash functions that returns emojis."
 repository = "https://github.com/gak/hashmoji"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 twox-hash = { version = "1.6.3", default-features = false }
