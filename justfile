@@ -1,3 +1,4 @@
+# Test a bunch of different configurations.
 test:
     RUSTFLAGS="-D warnings" cargo test
     RUSTFLAGS="-D warnings" cargo test --lib --no-default-features
@@ -22,6 +23,7 @@ test:
     cargo clippy --no-default-features -- -D warnings
     cargo clippy --no-default-features --features alloc -- -D warnings
 
+# Run all the examples.
 examples:
     cargo run --example iter
     cargo run --example full

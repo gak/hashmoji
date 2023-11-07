@@ -3,6 +3,8 @@ name = "hashmoji"
 version = "0.1.0"
 edition = "2021"
 authors = ["gak <gak@gak0.com>"]
+description = "Provides a hash functions that returns emojis."
+repository = "https://github.com/gak/hashmoji"
 
 [dependencies]
 twox-hash = { version = "1.6.3", default-features = false }
@@ -135,7 +137,7 @@ geometric = []
 flag = []
 country-flag = []
 subdivision-flag = []
-# Maximum unicode version to support (1501 = 15.1)
+# Maximum unicode version to support (v1501 = v15.1)
 v0006 = []
 v0007 = []
 v0100 = []
