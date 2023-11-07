@@ -30,7 +30,7 @@ impl Collection<'_> {
         let mut group = "".to_string();
         let mut subgroup = "".to_string();
 
-        let emoji = include_str!("../../emoji-test.txt");
+        let emoji = include_str!("../emoji-test.txt");
         for line in emoji.lines() {
             let line = line.trim();
             if line.is_empty() {
