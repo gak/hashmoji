@@ -2,5 +2,9 @@
 name = "hashmoji_generator"
 version = "0.1.0"
 edition = "2021"
+authors = ["gak <gak@gak0.com>"]
+description = "Code generation tool for hashmoji"
+repository = "https://github.com/gak/hashmoji"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
