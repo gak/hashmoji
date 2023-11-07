@@ -98,9 +98,12 @@ pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_featur
 
     let mut output = Vec::with_capacity(100);
     output.push(features_section.to_string());
-    output.push(r#"default = ["std", "skip-family"]"#.to_string());
+    output.push(r#"# The family feature is skipped by default because it has a lot of similar looking emojis,"#.to_string());
+    output.push(r#"# so they appear more and become difficult to differentiate."#.to_string());
+    output.push(r#"default = ["std", "family"]"#.to_string());
     output.push(r#"std = ["alloc"]"#.to_string());
     output.push(r#"alloc = []"#.to_string());
+    output.push(r#"# Additive will only include emojis that have a feature enabled, as opposed to using removing them."#.to_string());
     output.push(r#"additive = []"#.to_string());
 
     output.push("# Group features".to_string());
@@ -110,14 +113,6 @@ pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_featur
     output.push("# Subgroup features".to_string());
     for feature in subgroup_features {
         output.push(format!("{feature} = []"));
-    }
-    output.push("# Group skip features".to_string());
-    for feature in group_features {
-        output.push(format!("skip-{feature} = []"));
-    }
-    output.push("# Subgroup skip features".to_string());
-    for feature in subgroup_features {
-        output.push(format!("skip-{feature} = []"));
     }
 
     let output = output.join("\n");
@@ -161,13 +156,11 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
         .iter()
         .filter(move |emoji| {
             let include = has_env_feature(&emoji.group) || has_env_feature(&emoji.subgroup);
-            let skip = has_env_feature(&format!("skip-{}", emoji.group))
-                || has_env_feature(&format!("skip-{}", emoji.subgroup));
 
             if additive {
-                include && !skip
+                include
             } else {
-                !skip
+                !include
             }
         })
         .map(|emoji| emoji.emoji)
