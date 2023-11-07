@@ -27,3 +27,6 @@ test:
 examples:
     cargo run --example iter
     cargo run --example full
+
+generate-readme:
+    cargo readme -o README.md

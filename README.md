@@ -2,20 +2,22 @@
 
 hashmoji is a crate that generates deterministic unique emojis based on the hash of a value.
 
-This is useful for generating unique emojis for a given value, such as a user ID, or a file
-hash, instead of looking at a random UUID.
+This is useful for generating unique emojis for a given value, such as a user ID, a file
+hash, UUID, etc. It is easier for the eye to recognise an emoji than remembering some random
+alphanumeric strings.
 
 hashmoji relies on the `Hash` trait to generate a unique emoji for a given value, which many
 types implement, and of course you can implement it for your own types using `#[derive(Hash)]`.
 
 ## Capabilities
 
-* Generates emoji from a value:
-  [`hashmoji::single()`](https://docs.rs/hashmoji/latest/hashmoji/fn.one.html),
-  [`hashmoji::fixed()`](https://docs.rs/hashmoji/latest/hashmoji/fn.fixed.html),
-  [`hashmoji::variable()`](https://docs.rs/hashmoji/latest/hashmoji/fn.variable.html).
+- Generates emoji from a value:
+  - [`hashmoji::single()`](https://docs.rs/hashmoji/latest/hashmoji/fn.one.html)
+  - [`hashmoji::fixed()`](https://docs.rs/hashmoji/latest/hashmoji/fn.fixed.html)
+  - [`hashmoji::variable()`](https://docs.rs/hashmoji/latest/hashmoji/fn.variable.html)
 * Supports multiple versions of Unicode up to 15.1.
 * Supports `no_std` and optionally with `alloc`.
+* Choose the set of emojis to be selected from via groups, subgroups, modifiers, version, etc.
 * Generates configurable emoji sets during build so there's minimal runtime overhead.
 
 ## Usage
@@ -44,14 +46,11 @@ assert_eq!(emoji, "🌤️♎😟🟩");
 
 ## Filtering Features
 
-By default filtering features remove from the full set of emojis. When enabling the `additive` feature, the set of emojis start empty and the filtering features add to the set.
+By default, filtering features remove from the full set of emoji. When enabling the `additive`
+feature, the set of emojis start empty and the filtering features add to the set.
 
-### Modifiers
-
-- `all-modifiers` (default): Filter hair-styles, skin-tones, genders.
-- `hair-styles`: Filter hair-styles.
-- `skin-tones`: Filter skin-tones.
-- `genders`: Filter gender modifiers.
+Also by default, the `all-modifiers` filter is enabled because there are so many very similar
+permutations of the same emoji where it becomes difficult to differentiate them.
 
 ### Groups and Subgroups
 
@@ -77,7 +76,14 @@ And some of the subgroups. See [Cargo.toml](Cargo.toml) for the full list:
 - `face-sleepy`
 - etc...
 
-### Versions 
+### Modifiers
+
+- `all-modifiers` (default): Filter hair-styles, skin-tones, genders.
+- `hair-styles`: Filter hair-styles.
+- `skin-tones`: Filter skin-tones.
+- `genders`: Filter gender modifiers.
+
+### Versions
 
 You can choose the maximum Unicode version to be used. By default this is not set, so all versions are used. Versions are two digits for major, two for minor, e.g. `v1501` = `15.1`.
 
@@ -87,3 +93,5 @@ Supported versions are `v1510`, `v1500`, `v1400`, `v1301`, `v1300`, `v1201`, `v1
 
 **hashmoji** is licensed under either the [MIT license](LICENSE-MIT) or
 the [Apache-2.0 license](LICENSE-APACHE), at your discretion.
+
+License: MIT OR Apache-2.0
