@@ -48,7 +48,8 @@
 //! feature, the set of emojis start empty and the filtering features add to the set.
 //!
 //! Also by default, the `all-modifiers` filter is enabled because there are so many very similar
-//! permutations of the same emoji where it becomes difficult to differentiate them.
+//! permutations of the same emoji where it becomes difficult to differentiate them. Many of these
+//! combinations and modifiers don't render correctly in IDEs, terminals, etc.
 //!
 //! ## Groups and Subgroups
 //!
