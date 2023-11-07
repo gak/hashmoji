@@ -9,6 +9,8 @@ pub struct Emoji<'a> {
     pub group: String,
     pub subgroup: String,
     pub version: u16, // 15.1 = 1510
+    pub has_gender: bool,
+    pub has_skin_tone: bool,
 }
 
 pub struct Collection<'a> {
@@ -74,6 +76,18 @@ impl Collection<'_> {
             let emoji = line.split("# ").nth(1).unwrap();
             let mut parts = emoji.split(" ");
             let emoji = parts.next().unwrap();
+            let has_gender = false
+                || emoji.contains("\u{2640}")
+                || emoji.contains("\u{2642}")
+                || emoji.contains("\u{1F468}")
+                || emoji.contains("\u{1F469}");
+            let has_skin_tone = false
+                || emoji.contains("🏻")
+                || emoji.contains("🏼")
+                || emoji.contains("🏽")
+                || emoji.contains("🏾")
+                || emoji.contains("🏿");
+
             let version = parts.next().unwrap();
             let version = version.replace("E", "");
 
@@ -89,6 +103,8 @@ impl Collection<'_> {
                 subgroup: subgroup.clone(),
                 version,
                 emoji,
+                has_gender,
+                has_skin_tone,
             });
         }
 
@@ -120,6 +136,8 @@ pub fn write_features(path: &PathBuf, collection: Collection) {
     output.push(r#"alloc = []"#.to_string());
     output.push(r#"# Additive will only include emojis that have a feature enabled, as opposed to using removing them."#.to_string());
     output.push(r#"additive = []"#.to_string());
+    output.push(r#"skin-tones = []"#.to_string());
+    output.push(r#"genders = []"#.to_string());
 
     output.push("# Group features".to_string());
     for feature in &collection.group_features {
@@ -192,6 +210,9 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
         panic!("Only one version feature can be enabled at a time.");
     }
 
+    let skin_tone = has_env_feature("skin-tones");
+    let gender = has_env_feature("genders");
+
     collection
         .emojis
         .iter()
@@ -202,6 +223,26 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
                 include
             } else {
                 !include
+            }
+        })
+        .filter(move |emoji| {
+            if !emoji.has_skin_tone {
+                return true;
+            }
+            if additive {
+                skin_tone
+            } else {
+                !skin_tone
+            }
+        })
+        .filter(move |emoji| {
+            if !emoji.has_gender {
+                return true;
+            }
+            if additive {
+                gender
+            } else {
+                !gender
             }
         })
         .filter(move |emoji| {

@@ -22,6 +22,8 @@ std = ["alloc"]
 alloc = []
 # Additive will only include emojis that have a feature enabled, as opposed to using removing them.
 additive = []
+skin-tones = []
+genders = []
 # Group features
 smileys-and-emotion = []
 people-and-body = []
