@@ -201,7 +201,10 @@ fn to_feature_version(version: u16) -> String {
 
 /// Filter out emojis based on features (via build.rs CARGO_FEATURE_*).
 pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a str> {
-    let additive = env::var("CARGO_FEATURE_ADDITIVE").is_ok();
+    let additive = has_env_feature("additive");
+    let skin_tones = has_env_feature("skin-tones");
+    let genders = has_env_feature("genders");
+    let hair_styles = has_env_feature("hair-styles");
 
     let versions: Vec<u16> = env::vars()
         .into_iter()
@@ -218,10 +221,6 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
     if versions.len() > 1 {
         panic!("Only one version feature can be enabled at a time.");
     }
-
-    let skin_tones = has_env_feature("skin-tones");
-    let genders = has_env_feature("genders");
-    let hair_styles = has_env_feature("hair-styles");
 
     collection
         .emojis
@@ -242,35 +241,23 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
                 true
             }
         })
-        .filter(move |emoji| {
-            if !emoji.has_skin_tone {
-                return true;
-            }
-            if additive {
-                skin_tones
-            } else {
-                !skin_tones
-            }
-        })
-        .filter(move |emoji| {
-            if !emoji.has_gender {
-                return true;
-            }
-            if additive {
-                genders
-            } else {
-                !genders
-            }
-        })
-        .filter(move |emoji| {
-            if !emoji.has_hair_style {
-                return true;
-            }
-            if additive {
-                hair_styles
-            } else {
-                !hair_styles
-            }
-        })
+        .filter(move |emoji| filterable(additive, skin_tones, emoji.has_skin_tone))
+        .filter(move |emoji| filterable(additive, genders, emoji.has_gender))
+        .filter(move |emoji| filterable(additive, hair_styles, emoji.has_hair_style))
         .map(|emoji| emoji.emoji)
+}
+
+fn filterable(additive: bool, feature_flag: bool, has_emoji_modifier: bool) -> bool {
+    // e.g. doesn't have a hair style, we always include it.
+    if !has_emoji_modifier {
+        return true;
+    }
+
+    if additive {
+        // We're adding to the set, so only include if the feature is enabled.
+        feature_flag
+    } else {
+        // We're subtracting from the set, so only include if the feature is disabled.
+        !feature_flag
+    }
 }
