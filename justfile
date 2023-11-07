@@ -29,4 +29,4 @@ examples:
     cargo run --example full
 
 generate-readme:
-    cargo readme -o README.md
+    cargo readme --no-license -o README.md

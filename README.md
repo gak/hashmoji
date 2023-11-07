@@ -93,5 +93,3 @@ Supported versions are `v1510`, `v1500`, `v1400`, `v1301`, `v1300`, `v1201`, `v1
 
 **hashmoji** is licensed under either the [MIT license](LICENSE-MIT) or
 the [Apache-2.0 license](LICENSE-APACHE), at your discretion.
-
-License: MIT OR Apache-2.0
