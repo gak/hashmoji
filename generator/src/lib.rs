@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
@@ -7,13 +8,14 @@ pub struct Emoji<'a> {
     pub emoji: &'a str,
     pub group: String,
     pub subgroup: String,
-    pub version: String,
+    pub version: u16, // 15.1 = 1510
 }
 
 pub struct Collection<'a> {
     pub emojis: Vec<Emoji<'a>>,
     pub group_features: Vec<String>,
     pub subgroup_features: Vec<String>,
+    pub versions: HashSet<u16>,
 }
 
 impl Collection<'_> {
@@ -21,6 +23,7 @@ impl Collection<'_> {
         let mut emojis = Vec::with_capacity(4_000);
         let mut group_features = Vec::with_capacity(10);
         let mut subgroup_features = Vec::with_capacity(50);
+        let mut versions = HashSet::with_capacity(10);
         let mut group = "".to_string();
         let mut subgroup = "".to_string();
 
@@ -63,12 +66,23 @@ impl Collection<'_> {
                 continue;
             }
 
+            if group.is_empty() || subgroup.is_empty() {
+                panic!("Missing group or subgroup");
+            }
+
             // Grab the emoji and version after "# "
             let emoji = line.split("# ").nth(1).unwrap();
             let mut parts = emoji.split(" ");
             let emoji = parts.next().unwrap();
             let version = parts.next().unwrap();
             let version = version.replace("E", "");
+
+            // Convert version to u16, i.e. "15.1" -> 1501
+            let parts = version.split(".").collect::<Vec<_>>();
+            let major = parts[0].parse::<u16>().unwrap();
+            let minor = parts[1].parse::<u16>().unwrap();
+            let version = major * 100 + minor;
+            versions.insert(version);
 
             emojis.push(Emoji {
                 group: group.clone(),
@@ -82,12 +96,13 @@ impl Collection<'_> {
             emojis,
             group_features,
             subgroup_features,
+            versions,
         }
     }
 }
 
 /// Open up Cargo.toml and find [features], then replace the rest.
-pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_features: &[String]) {
+pub fn write_features(path: &PathBuf, collection: Collection) {
     let mut cargo = File::open(&path).unwrap();
     let mut cargo_toml = String::new();
     cargo.read_to_string(&mut cargo_toml).unwrap();
@@ -107,12 +122,20 @@ pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_featur
     output.push(r#"additive = []"#.to_string());
 
     output.push("# Group features".to_string());
-    for feature in group_features {
+    for feature in &collection.group_features {
         output.push(format!("{feature} = []"));
     }
+
     output.push("# Subgroup features".to_string());
-    for feature in subgroup_features {
+    for feature in &collection.subgroup_features {
         output.push(format!("{feature} = []"));
+    }
+
+    output.push("# Maximum unicode version to support (1501 = 15.1)".to_string());
+    let mut versions = collection.versions.iter().collect::<Vec<_>>();
+    versions.sort();
+    for version in versions {
+        output.push(format!("{} = []", to_feature_version(*version)));
     }
 
     let output = output.join("\n");
@@ -122,8 +145,12 @@ pub fn write_features(path: &PathBuf, group_features: &[String], subgroup_featur
     cargo_toml.write_all(output.as_bytes()).unwrap();
     cargo_toml.write_all("\n".as_bytes()).unwrap();
 
-    let count = (group_features.len() + subgroup_features.len()) * 2;
-    println!("Wrote {count} features to {path:?}");
+    println!(
+        "Wrote {} group features, {} subgroup features, {} version features to {path:?}",
+        collection.group_features.len(),
+        collection.subgroup_features.len(),
+        collection.versions.len(),
+    );
 }
 
 fn has_env_feature(s: &str) -> bool {
@@ -134,22 +161,36 @@ fn has_env_feature(s: &str) -> bool {
 }
 
 /// Convert a string to a valid rust feature identifier.
-pub fn to_feature_name(s: &str) -> String {
+fn to_feature_name(s: &str) -> String {
     let mut s = s.to_lowercase();
     s = s.replace(" ", "-");
     s = s.replace("&", "and");
     s
 }
 
-/// Filter out emojis based on group and subgroup features (via build.rs CARGO_FEATURE_*).
+fn to_feature_version(version: u16) -> String {
+    format!("v{:04}", version)
+}
+
+/// Filter out emojis based on features (via build.rs CARGO_FEATURE_*).
 pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a str> {
-    // Additive means we only include emojis that have a feature enabled.
-    // In this case, you can add a group, but skip a subgroup.
-    //
-    // When not additive, all emojis are included by default, and you can remove them using
-    // skip- features. The "add" features still work if you want to skip a group, but still include
-    // a subgroup.
     let additive = env::var("CARGO_FEATURE_ADDITIVE").is_ok();
+
+    let versions: Vec<u16> = env::vars()
+        .into_iter()
+        .filter_map(|(k, _)| {
+            if !k.starts_with("CARGO_FEATURE_V") {
+                return None;
+            }
+
+            let version = k.replace("CARGO_FEATURE_V", "");
+            let version = version.parse::<u16>().unwrap();
+            Some(version)
+        })
+        .collect();
+    if versions.len() > 1 {
+        panic!("Only one version feature can be enabled at a time.");
+    }
 
     collection
         .emojis
@@ -161,6 +202,13 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
                 include
             } else {
                 !include
+            }
+        })
+        .filter(move |emoji| {
+            if let Some(version) = versions.first() {
+                emoji.version <= *version
+            } else {
+                true
             }
         })
         .map(|emoji| emoji.emoji)
