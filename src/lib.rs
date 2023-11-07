@@ -2,20 +2,22 @@
 //!
 //! hashmoji is a crate that generates deterministic unique emojis based on the hash of a value.
 //!
-//! This is useful for generating unique emojis for a given value, such as a user ID, or a file
-//! hash, instead of looking at a random UUID.
+//! This is useful for generating unique emojis for a given value, such as a user ID, a file
+//! hash, UUID, etc. It is easier for the eye to recognise an emoji than remembering some random
+//! alphanumeric strings.
 //!
 //! hashmoji relies on the `Hash` trait to generate a unique emoji for a given value, which many
 //! types implement, and of course you can implement it for your own types using `#[derive(Hash)]`.
 //!
 //! ## Capabilities
 //!
-//! * Generates emoji from a value:
-//!   [`hashmoji::single()`](https://docs.rs/hashmoji/latest/hashmoji/fn.one.html),
-//!   [`hashmoji::fixed()`](https://docs.rs/hashmoji/latest/hashmoji/fn.fixed.html),
-//!   [`hashmoji::variable()`](https://docs.rs/hashmoji/latest/hashmoji/fn.variable.html).
+//! - Generates emoji from a value:
+//!   - [`hashmoji::single()`](https://docs.rs/hashmoji/latest/hashmoji/fn.one.html)
+//!   - [`hashmoji::fixed()`](https://docs.rs/hashmoji/latest/hashmoji/fn.fixed.html)
+//!   - [`hashmoji::variable()`](https://docs.rs/hashmoji/latest/hashmoji/fn.variable.html)
 //! * Supports multiple versions of Unicode up to 15.1.
 //! * Supports `no_std` and optionally with `alloc`.
+//! * Choose the set of emojis to be selected from via groups, subgroups, modifiers, version, etc.
 //! * Generates configurable emoji sets during build so there's minimal runtime overhead.
 //!
 //! ## Usage
