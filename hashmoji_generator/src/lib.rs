@@ -22,6 +22,7 @@ pub struct Collection<'a> {
 }
 
 impl Collection<'_> {
+    #[allow(clippy::nonminimal_bool)]
     pub fn all() -> Self {
         let mut emojis = Vec::with_capacity(4_000);
         let mut group_features = Vec::with_capacity(10);
@@ -40,7 +41,7 @@ impl Collection<'_> {
             if line.starts_with("# group:") {
                 let found_group = line.split(": ").nth(1).unwrap();
                 group = to_feature_name(found_group);
-                if group == "component".to_string() {
+                if &group == "component" {
                     continue;
                 }
                 group_features.push(group.clone());
@@ -49,7 +50,7 @@ impl Collection<'_> {
 
             if line.starts_with("# subgroup:") {
                 let found_subgroup = line.split(": ").nth(1).unwrap();
-                if group == "component".to_string() {
+                if &group == "component" {
                     continue;
                 }
                 subgroup = to_feature_name(found_subgroup);
@@ -57,7 +58,7 @@ impl Collection<'_> {
                 continue;
             }
 
-            if line.starts_with("#") {
+            if line.starts_with('#') {
                 continue;
             }
 
@@ -75,30 +76,30 @@ impl Collection<'_> {
 
             // Grab the emoji and version after "# "
             let emoji = line.split("# ").nth(1).unwrap();
-            let mut parts = emoji.split(" ");
+            let mut parts = emoji.split(' ');
             let emoji = parts.next().unwrap();
             let has_gender = false
-                || emoji.contains("\u{2640}")
-                || emoji.contains("\u{2642}")
-                || emoji.contains("\u{1F468}")
-                || emoji.contains("\u{1F469}");
+                || emoji.contains('\u{2640}')
+                || emoji.contains('\u{2642}')
+                || emoji.contains('\u{1F468}')
+                || emoji.contains('\u{1F469}');
             let has_skin_tone = false
-                || emoji.contains("🏻")
-                || emoji.contains("🏼")
-                || emoji.contains("🏽")
-                || emoji.contains("🏾")
-                || emoji.contains("🏿");
+                || emoji.contains('🏻')
+                || emoji.contains('🏼')
+                || emoji.contains('🏽')
+                || emoji.contains('🏾')
+                || emoji.contains('🏿');
             let has_hair = false
-                || emoji.contains("🦰")
-                || emoji.contains("🦱")
-                || emoji.contains("🦳")
-                || emoji.contains("🦲");
+                || emoji.contains('🦰')
+                || emoji.contains('🦱')
+                || emoji.contains('🦳')
+                || emoji.contains('🦲');
 
             let version = parts.next().unwrap();
-            let version = version.replace("E", "");
+            let version = version.replace('E', "");
 
             // Convert version to u16, i.e. "15.1" -> 1501
-            let parts = version.split(".").collect::<Vec<_>>();
+            let parts = version.split('.').collect::<Vec<_>>();
             let major = parts[0].parse::<u16>().unwrap();
             let minor = parts[1].parse::<u16>().unwrap();
             let version = major * 100 + minor;
@@ -126,7 +127,7 @@ impl Collection<'_> {
 
 /// Open up Cargo.toml and find [features], then replace the rest.
 pub fn write_features(path: &PathBuf, collection: Collection) {
-    let mut cargo = File::open(&path).unwrap();
+    let mut cargo = File::open(path).unwrap();
     let mut cargo_toml = String::new();
     cargo.read_to_string(&mut cargo_toml).unwrap();
 
@@ -167,7 +168,7 @@ pub fn write_features(path: &PathBuf, collection: Collection) {
 
     let output = output.join("\n");
 
-    let mut cargo_toml = File::create(&path).unwrap();
+    let mut cargo_toml = File::create(path).unwrap();
     cargo_toml.write_all(content.as_bytes()).unwrap();
     cargo_toml.write_all(output.as_bytes()).unwrap();
     cargo_toml.write_all("\n".as_bytes()).unwrap();
@@ -182,7 +183,7 @@ pub fn write_features(path: &PathBuf, collection: Collection) {
 
 fn has_env_feature(s: &str) -> bool {
     let mut s = s.to_uppercase();
-    s = s.replace("-", "_");
+    s = s.replace('-', "_");
     s = format!("CARGO_FEATURE_{}", s);
     env::var(s).is_ok()
 }
@@ -190,8 +191,8 @@ fn has_env_feature(s: &str) -> bool {
 /// Convert a string to a valid rust feature identifier.
 fn to_feature_name(s: &str) -> String {
     let mut s = s.to_lowercase();
-    s = s.replace(" ", "-");
-    s = s.replace("&", "and");
+    s = s.replace(' ', "-");
+    s = s.replace('&', "and");
     s
 }
 
@@ -207,7 +208,6 @@ pub fn filter<'a>(collection: &'a Collection<'a>) -> impl Iterator<Item = &'a st
     let hair_styles = has_env_feature("hair-styles");
 
     let versions: Vec<u16> = env::vars()
-        .into_iter()
         .filter_map(|(k, _)| {
             if !k.starts_with("CARGO_FEATURE_V") {
                 return None;
