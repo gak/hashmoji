@@ -28,5 +28,5 @@ assert_eq!(emoji, "🌤️♎😟🟩");
 
 ## License
 
-**flea_bit** is licensed under either the [MIT license](LICENSE-MIT) or
+**hashmoji** is licensed under either the [MIT license](LICENSE-MIT) or
 the [Apache-2.0 license](LICENSE-APACHE), at your discretion.
