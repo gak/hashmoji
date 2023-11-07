@@ -5,6 +5,7 @@ use std::str::FromStr;
 fn main() {
     let mut cargo_path = PathBuf::from_str(env!("CARGO_MANIFEST_DIR")).unwrap();
     cargo_path.push("..");
+    cargo_path.push("hashmoji");
     cargo_path.push("Cargo.toml");
 
     let collection = Collection::all();

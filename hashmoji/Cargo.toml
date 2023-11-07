@@ -10,6 +10,7 @@ categories = ["development-tools::debugging", "no-std", ]
 keywords = ["hash", "emoji"]
 
 [dependencies]
+hashmoji_derive = { version = "0.1.0", path = "../hashmoji_derive", optional = true }
 twox-hash = { version = "1.6.3", default-features = false }
 
 [dev-dependencies]
@@ -24,6 +25,7 @@ hashmoji_generator = { version = "0.1.0", path = "../hashmoji_generator" }
 default = ["std", "all-modifiers"]
 std = ["alloc"]
 alloc = []
+derive = ["dep:hashmoji_derive"]
 # Additive will only include emojis that have a feature enabled, as opposed to using removing them.
 additive = []
 all-modifiers = ["skin-tones", "genders", "hair-styles"]

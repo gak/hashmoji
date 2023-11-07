@@ -1,3 +1,8 @@
+generate_and_test: generate test
+
+generate:
+    cargo run -p hashmoji_generator
+
 # Test a bunch of different configurations.
 test:
     RUSTFLAGS="-D warnings" cargo test

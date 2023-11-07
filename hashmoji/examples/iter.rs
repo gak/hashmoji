@@ -18,4 +18,5 @@ fn main() {
     }
 
     println!("{}", hashmoji::iter().collect::<String>());
+    eprintln!("{}", hashmoji::iter().count());
 }

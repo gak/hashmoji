@@ -137,11 +137,11 @@ pub fn write_features(path: &PathBuf, collection: Collection) {
 
     let mut output = Vec::with_capacity(100);
     output.push(features_section.to_string());
-    output.push(r#"# The family feature is skipped by default because it has a lot of similar looking emojis,"#.to_string());
-    output.push(r#"# so they appear more and become difficult to differentiate."#.to_string());
-    output.push(r#"default = ["std", "family"]"#.to_string());
+    output.push(r#"# Modifiers are skipped by default because it has a lot of similar looking emojis (depending on the font of course)."#.to_string());
+    output.push(r#"default = ["std", "all-modifiers"]"#.to_string());
     output.push(r#"std = ["alloc"]"#.to_string());
     output.push(r#"alloc = []"#.to_string());
+    output.push(r#"derive = ["dep:hashmoji_derive"]"#.to_string());
     output.push(r#"# Additive will only include emojis that have a feature enabled, as opposed to using removing them."#.to_string());
     output.push(r#"additive = []"#.to_string());
     output.push(r#"all-modifiers = ["skin-tones", "genders", "hair-styles"]"#.to_string());
@@ -159,7 +159,7 @@ pub fn write_features(path: &PathBuf, collection: Collection) {
         output.push(format!("{feature} = []"));
     }
 
-    output.push("# Maximum unicode version to support (1501 = 15.1)".to_string());
+    output.push("# Maximum unicode version to support (v1501 = v15.1)".to_string());
     let mut versions = collection.versions.iter().collect::<Vec<_>>();
     versions.sort();
     for version in versions {
