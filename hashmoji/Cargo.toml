@@ -1,12 +1,12 @@
 [package]
 name = "hashmoji"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["gak <gak@gak0.com>"]
 description = "Generates deterministic emoji based on the hash of a value."
 repository = "https://github.com/gak/hashmoji"
 license = "MIT OR Apache-2.0"
-categories = ["development-tools::debugging", "no-std", ]
+categories = ["development-tools::debugging", "no-std"]
 keywords = ["hash", "emoji"]
 
 [dependencies]
@@ -87,7 +87,6 @@ food-fruit = []
 food-vegetable = []
 food-prepared = []
 food-asian = []
-food-marine = []
 food-sweet = []
 drink = []
 dishware = []
@@ -158,3 +157,4 @@ v1301 = []
 v1400 = []
 v1500 = []
 v1501 = []
+v1600 = []

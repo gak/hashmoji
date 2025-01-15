@@ -13,7 +13,7 @@
 //!   - [`hashmoji::single()`](https://docs.rs/hashmoji/latest/hashmoji/fn.one.html)
 //!   - [`hashmoji::fixed()`](https://docs.rs/hashmoji/latest/hashmoji/fn.fixed.html)
 //!   - [`hashmoji::variable()`](https://docs.rs/hashmoji/latest/hashmoji/fn.variable.html)
-//! * Supports multiple versions of Unicode up to 15.1.
+//! * Supports multiple versions of Unicode up to 16.0.
 //! * Supports `no_std` and optionally with `alloc`.
 //! * Choose the set of emojis to be selected from via groups, subgroups, modifiers, version, etc.
 //! * Generates configurable emoji sets during build so there's minimal runtime overhead.
@@ -21,19 +21,19 @@
 //! # Usage
 //!
 //! ```rust
-//! let uuid = "30d8c256-0ffa-4e1b-8e1e-437bb0a0b45a";
+//! let uuid = "30d8c256-0ffa-4e1b-8e1e-437bb0a0b45b";
 //!
 //! // Generate a single emoji:
 //! let emoji = hashmoji::one(uuid);
-//! assert_eq!(emoji, "🌤️");
+//! assert_eq!(emoji, "🍃");
 //!
 //! // You can also generate a fixed length string:
 //! let emoji = hashmoji::fixed(uuid, 10);
-//! assert_eq!(emoji, "🌤️♎😟🟩⤵️🇽🇰🇧🇦🏉🤠🦵");
+//! assert_eq!(emoji, "🍃♓📬🫠⏹\u{fe0f}🇦🇴🧹💀📦🇲🇾");
 //!
 //! // A variable length string, depending on the hash:
 //! let emoji = hashmoji::variable(uuid, 3..7);
-//! assert_eq!(emoji, "🌤️♎😟🟩");
+//! assert_eq!(emoji, "🍃♓📬🫠");
 //! ```
 //!
 //! # Features

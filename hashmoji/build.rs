@@ -19,7 +19,7 @@ fn write_emojis<'a>(path: &PathBuf, emojis: impl Iterator<Item = &'a str>) {
 
     let mut generated = File::create(path).unwrap();
     generated
-        .write_all(format!("pub(crate) const EMOJIS: [&str; {count}] = [\n").as_bytes())
+        .write_all(format!("pub(crate) static EMOJIS: [&str; {count}] = [\n").as_bytes())
         .unwrap();
 
     for emoji in emojis {
