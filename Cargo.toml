@@ -1,8 +1,4 @@
 [workspace]
 resolver = "2"
 
-members = [
-    "hashmoji",
-    "hashmoji_generator",
-    "hashmoji_derive",
-]
+members = ["hashmoji", "hashmoji_generator"]
